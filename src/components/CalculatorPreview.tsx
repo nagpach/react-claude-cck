@@ -1,19 +1,20 @@
 import { useMemo, type CSSProperties } from "react";
 
-import { FONT_STACKS, type CalculatorDesign } from "@/config/design";
+import { FONT_STACKS } from "@/config/design";
 import { KEYS } from "@/config/keys";
 import { formatNumber } from "@/lib/calculator";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/theme/ThemeProvider";
 import type { CalcMemory, CalculatorKey, CalculatorVars } from "@/types";
 
 interface CalculatorPreviewProps {
-  design: CalculatorDesign;
   memory: CalcMemory;
   onAction: (key: CalculatorKey) => void;
 }
 
-/** Renders the live calculator, driven entirely by CSS variables from the design. */
-export function CalculatorPreview({ design, memory, onAction }: CalculatorPreviewProps) {
+/** Renders the live calculator, driven entirely by CSS variables from the active theme. */
+export function CalculatorPreview({ memory, onAction }: CalculatorPreviewProps) {
+  const { design } = useTheme();
   const displayItems = design.align === "left" ? "flex-start" : design.align === "center" ? "center" : "flex-end";
   const isCircle = design.shape === "Circle";
 

@@ -4,9 +4,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { CalculatorPreview } from "@/components/CalculatorPreview";
 import { ControlsPanel } from "@/components/ControlsPanel";
 import { useCalculator } from "@/hooks/useCalculator";
-import { useDesign } from "@/hooks/useDesign";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
 import { cn } from "@/lib/utils";
+import { ThemeProvider, useTheme } from "@/theme/ThemeProvider";
 
 const DeveloperArticle = lazy(() =>
   import("@/components/DeveloperArticle").then((module) => ({ default: module.DeveloperArticle })),
@@ -24,7 +24,7 @@ function RouteFallback() {
 }
 
 function CalculatorBuilder() {
-  const { design, updateField, applyPreset, chooseShape, reset, randomize } = useDesign();
+  const { design } = useTheme();
   const { memory, runKey } = useCalculator(design.separators);
   const [panelOpen, setPanelOpen] = useState(true);
   const viewportWidth = useViewportWidth();
@@ -42,16 +42,7 @@ function CalculatorBuilder() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-chrome-bg text-chrome-ink antialiased">
-      <ControlsPanel
-        design={design}
-        updateField={updateField}
-        applyPreset={applyPreset}
-        chooseShape={chooseShape}
-        reset={reset}
-        randomize={randomize}
-        open={panelOpen}
-        onOpenChange={setPanelOpen}
-      />
+      <ControlsPanel open={panelOpen} onOpenChange={setPanelOpen} />
 
       <main
         className={cn(
@@ -60,15 +51,8 @@ function CalculatorBuilder() {
         )}
         style={{ background: design.stageBg }}
       >
-        <div className="stage-grid" />
         <div className="preview-positioner" style={{ transform: `translateX(${previewShift}px)` }}>
-          <CalculatorPreview design={design} memory={memory} onAction={runKey} />
-        </div>
-        <div
-          className="preview-marker pointer-events-none absolute bottom-[18px] left-1/2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-white/40 mix-blend-difference"
-          style={{ transform: `translateX(calc(-50% + ${previewShift}px))` }}
-        >
-          live preview
+          <CalculatorPreview memory={memory} onAction={runKey} />
         </div>
       </main>
     </div>
@@ -77,13 +61,15 @@ function CalculatorBuilder() {
 
 export default function App() {
   return (
-    <Suspense fallback={<RouteFallback />}>
-      <Routes>
-        <Route path="/" element={<CalculatorBuilder />} />
-        <Route path="/developer" element={<DeveloperArticle />} />
-        <Route path="/blog/react-router-migration" element={<RouterMigrationArticle />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Suspense>
+    <ThemeProvider>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/" element={<CalculatorBuilder />} />
+          <Route path="/developer" element={<DeveloperArticle />} />
+          <Route path="/blog/react-router-migration" element={<RouterMigrationArticle />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </ThemeProvider>
   );
 }

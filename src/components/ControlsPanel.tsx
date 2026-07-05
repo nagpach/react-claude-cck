@@ -12,34 +12,27 @@ import { ALIGNS, FONT_NAMES, PRESET_NAMES, PRESSES, SHADOWS, SHAPE_NAMES } from 
 import { COLOR_FIELDS, SHAPE_SLIDERS, TYPE_SLIDERS } from "@/config/controls";
 import { PRESETS } from "@/config/presets";
 import { cn } from "@/lib/utils";
-import type { UseDesignResult } from "@/hooks/useDesign";
+import { useTheme } from "@/theme/ThemeProvider";
 
-interface ControlsPanelProps extends UseDesignResult {
+interface ControlsPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 /**
  * The full design controls sidebar. Rendered into a portal so it can float
- * above the page on small screens and dock beside it on large screens.
+ * above the page on small screens and dock beside it on large screens. Reads
+ * and mutates the active theme through the ThemeProvider context.
  */
-export function ControlsPanel({
-  design,
-  updateField,
-  applyPreset,
-  chooseShape,
-  reset,
-  randomize,
-  open,
-  onOpenChange,
-}: ControlsPanelProps) {
+export function ControlsPanel({ open, onOpenChange }: ControlsPanelProps) {
+  const { design, updateField, applyPreset, chooseShape, reset, randomize } = useTheme();
   const panel = open ? (
     <aside className="panel fixed inset-x-0 top-0 z-50 flex max-h-[50vh] min-h-0 flex-col overflow-y-auto overflow-x-hidden border-b border-chrome-line bg-chrome-panel shadow-[0_18px_45px_-30px_rgba(0,0,0,.45)] md:inset-y-0 md:left-0 md:right-auto md:max-h-none md:w-[392px] md:border-b-0 md:border-r md:shadow-none">
       <div className="sticky top-0 z-[5] border-b border-chrome-line bg-chrome-panel px-6 pb-4 pt-[22px]">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-chrome-mute">Construction Kit</div>
-            <h1 className="mt-1 text-[19px] font-semibold tracking-tight">Calculator</h1>
+            <div className="text-[12px] text-chrome-mute">Construction Kit</div>
+            <h1 className="mt-0.5 text-[19px] font-semibold tracking-tight">Calculator</h1>
           </div>
           <Button
             type="button"
@@ -57,7 +50,7 @@ export function ControlsPanel({
           <Button
             type="button"
             variant="outline"
-            className="h-auto flex-1 px-2.5 py-[9px] font-mono text-[11px] uppercase tracking-[0.04em] active:translate-y-px"
+            className="h-auto flex-1 px-2.5 py-[9px] text-[13px] active:translate-y-px"
             onClick={randomize}
           >
             <Shuffle />
@@ -65,7 +58,8 @@ export function ControlsPanel({
           </Button>
           <Button
             type="button"
-            className="h-auto flex-1 px-2.5 py-[9px] font-mono text-[11px] uppercase tracking-[0.04em] active:translate-y-px"
+            variant="outline"
+            className="h-auto flex-1 px-2.5 py-[9px] text-[13px] active:translate-y-px"
             onClick={reset}
           >
             <RotateCcw />
@@ -75,7 +69,7 @@ export function ControlsPanel({
         <Button
           asChild
           variant="ghost"
-          className="mt-2 h-auto w-full justify-start px-2.5 py-[8px] font-mono text-[11px] uppercase tracking-[0.04em]"
+          className="mt-2 h-auto w-full justify-start px-2.5 py-[8px] text-[13px] text-chrome-mute"
         >
           <Link to="/developer">
             <BookOpen />
@@ -85,10 +79,6 @@ export function ControlsPanel({
       </div>
 
       <div className="px-6 pb-[60px] pt-1.5">
-        <PanelSection title="View">
-          <SwitchControl id="controls-panel" label="Controls panel" checked={open} onChange={onOpenChange} />
-        </PanelSection>
-
         <PanelSection title="Presets">
           <div className="grid grid-cols-3 gap-2">
             {PRESET_NAMES.map((name) => {
